@@ -11,7 +11,7 @@ soup = BeautifulSoup(data, 'html.parser')
 
 result_json_content = {}
 result_json_content['timestamp'] = datetime.datetime.now().strftime('%c')
-result_json_content['pick-conditions'] = []
+result_json_content['pick_conditions'] = []
 
 for divs in soup.find_all('div', attrs={'class': 'entry-content'}):
   berryland = {}

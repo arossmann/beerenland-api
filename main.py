@@ -14,25 +14,25 @@ result_json_content['timestamp'] = datetime.datetime.now().strftime('%c')
 result_json_content['pick-conditions'] = []
 
 for divs in soup.find_all('div', attrs={'class': 'entry-content'}):
-  location = {}
+  berryland = {}
   heads = divs.find_all('h3')
   for head in heads:
     if head.find('span', attrs={"style": "color: #572381;"}) is not None:
-      location['location'] = head.find('span').get_text(strip=True)
+      location = head.find('span').get_text(strip=True)
       # print(head.find('span').get_text(strip=True))
   for tables in divs.find_all('table', attrs={'frame':'above'}):
-    location['berries'] = []
+    berryland[location] = []
     for row in tables.tbody.find_all('tr'):    
         columns = row.find_all('td')
         if(columns != []):
-          location['berries'].append(
+          berryland[location].append(
            {
             "berry" : columns[0].text.strip(),
             "status": columns[1].img.attrs['src']
            }
           )
-  if location != {}:
-    result_json_content['pick-conditions'].append(location)
+  if berryland != {}:
+    result_json_content['pick-conditions'].append(berryland)
 
 pick_conditions_filename = 'docs/result.json'
 

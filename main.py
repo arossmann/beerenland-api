@@ -32,7 +32,7 @@ for divs in soup.find_all('div', attrs={'class': 'entry-content'}):
            }
           )
   if berryland != {}:
-    result_json_content['pick-conditions'].append(berryland)
+    result_json_content['pick_conditions'].append(berryland)
 
 pick_conditions_filename = 'docs/result.json'
 

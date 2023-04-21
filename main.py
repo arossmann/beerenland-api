@@ -5,47 +5,52 @@ import json
 import datetime
 
 
-url = "https://cafebeerenland.de/aktuelles/pflueckbedingungen/"
+url = "https://cafebeerenland.de/pflueckbedingungen-2/"
 data = requests.get(url).text
 soup = BeautifulSoup(data, 'html.parser')
 
+datablocks = {'Wolkersdorf': '5048a4e',
+            'Rueckersdorf': '935d18e',
+            'Fuerth Sued': 'ed507ec'
+            }
 
-def get_status(image):
+def get_status(status):
     switch={
       'http://cafebeerenland.de/wp-content/uploads/2016/02/gut2.gif':'good',
       'http://cafebeerenland.de/wp-content/uploads/2016/02/verkauf.gif':'sale',
       'http://cafebeerenland.de/wp-content/uploads/2016/02/schlecht.gif':'bad',
-      'http://cafebeerenland.de/wp-content/uploads/2016/02/geschlossen.gif':'closed'
+      '❌':'closed'
       }
-    return switch.get(image,"Invalid input")
+    return switch.get(status,"Invalid input")
 
 
 def main():
     result_json_content = {}
     result_json_content['timestamp'] = datetime.datetime.now().strftime('%c')
     result_json_content['pick_conditions'] = []
-
-    for divs in soup.find_all('div', attrs={'class': 'entry-content'}):
+    
+    for k,v in datablocks.items():
       berryland = {}
-      heads = divs.find_all('h3')
-      for head in heads:
-        if head.find('span', attrs={"style": "color: #572381;"}) is not None:
-          location = head.find('span').get_text(strip=True)
-          # print(head.find('span').get_text(strip=True))
-      for tables in divs.find_all('table', attrs={'frame':'above'}):
-        berryland[location] = []
-        for row in tables.tbody.find_all('tr'):    
-            columns = row.find_all('td')
-            if(columns != []):
-              berryland[location].append(
+      print("-- "+k+" ---")
+      for blocks in soup.find_all('div', attrs={'data-block-id': v}):
+        berryland[k] = []
+        # print(blocks)
+        for block in blocks.find_all('p', attrs={'class': 'stk-block-text__text'}):
+          # print(block)
+          lines = str(block)[52:-4].split("<br/>")
+          for line in lines:
+            if len(line) > 0:
+              status = line[0]
+              berry = line[2:]
+              berryland[k].append(
                {
-                "berry" : columns[0].text.strip(),
-                "image": columns[1].img.attrs['src'],
-                "status": get_status(columns[1].img.attrs['src'])
+                "berry" : berry,
+                "status": get_status(status)
                }
               )
-      if berryland != {}:
-        result_json_content['pick_conditions'].append(berryland)
+              print(status, berry)
+        if berryland != {}:
+          result_json_content['pick_conditions'].append(berryland)
 
     pick_conditions_filename = 'docs/result.json'
 

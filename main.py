@@ -19,7 +19,8 @@ def get_status(status):
       'http://cafebeerenland.de/wp-content/uploads/2016/02/gut2.gif':'good',
       'http://cafebeerenland.de/wp-content/uploads/2016/02/verkauf.gif':'sale',
       'http://cafebeerenland.de/wp-content/uploads/2016/02/schlecht.gif':'bad',
-      '❌':'closed'
+      '❌':'closed',
+      '✔️': 'open'
       }
     return switch.get(status,"Invalid input")
 
